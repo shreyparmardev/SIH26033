@@ -788,33 +788,33 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <div className="mt-4 space-y-1.5 text-xs text-[#505746] pt-3 border-t border-[#ECE5D8]">
-                        <div className="flex justify-between">
-                          <span className="text-[#7A8070]">Location / Mandi:</span>
-                          <span className="font-medium text-[#1E221B] text-right">{crop.location}</span>
+                      <div className="mt-3.5 space-y-2 text-xs text-[#505746] pt-3 border-t border-[#ECE5D8]">
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span className="text-[#7A8070] shrink-0 font-normal">Location / Mandi:</span>
+                          <span className="font-medium text-[#1E221B] text-right truncate" title={crop.location}>{crop.location}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-[#7A8070]">Available Quantity:</span>
-                          <span className="font-semibold text-[#1E221B]">{crop.quantity}</span>
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-[#7A8070] shrink-0 font-normal">Available Quantity:</span>
+                          <span className="font-semibold text-[#1E221B] shrink-0">{crop.quantity}</span>
                         </div>
-                        <div className="flex justify-between">
-                          <span className="text-[#7A8070]">Producer Organization:</span>
-                          <span className="font-medium text-[#3B532B]">{crop.seller}</span>
+                        <div className="flex items-baseline justify-between gap-3">
+                          <span className="text-[#7A8070] shrink-0 font-normal">Producer Organization:</span>
+                          <span className="font-medium text-[#2E4221] text-right truncate" title={crop.seller}>{crop.seller}</span>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Pricing and Action */}
-                  <div className="p-5 pt-0">
-                    <div className="flex items-center justify-between p-3 bg-[#F4F0E6] rounded border border-[#E0D9CB]">
-                      <div>
-                        <span className="block text-[10px] text-[#7A8070] uppercase tracking-wider font-semibold">Offer Price</span>
-                        <span className="text-base font-serif font-bold text-[#1E221B]">{crop.price}</span>
+                  <div className="p-4 sm:p-5 pt-0">
+                    <div className="p-3.5 bg-[#F4F0E6] rounded-lg border border-[#DFD8CB] space-y-2.5">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <span className="text-[10px] text-[#7A8070] uppercase tracking-wider font-bold">Offer Price</span>
+                        <span className="text-lg font-serif font-bold text-[#1E221B]">{crop.price}</span>
                       </div>
-                      <Link href="/marketplace">
-                        <button className="px-4 py-2 text-xs font-semibold uppercase tracking-wider bg-[#3B532B] text-[#FAF8F2] rounded hover:bg-[#2D4021]">
-                          Procure Lot
+                      <Link href="/marketplace" className="block">
+                        <button className="w-full h-9 px-4 text-xs font-bold uppercase tracking-wider bg-[#233D22] text-[#FAF8F2] rounded-md hover:bg-[#1C321B] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
+                          <span>Procure Lot</span>
                         </button>
                       </Link>
                     </div>
