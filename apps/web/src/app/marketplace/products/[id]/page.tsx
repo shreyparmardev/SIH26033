@@ -147,7 +147,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     <div className="rounded border border-[#DFD8CB] bg-[#F7F5EE] p-3">
                       <span className="text-[10px] uppercase font-bold text-[#7A8070] block">Variety / Grade</span>
                       <p className="font-bold text-[#1E221B] mt-0.5">
-                        {product.varietyType || 'Standard Commercial'}
+                        {product.varietyType && product.varietyType.toLowerCase() !== 'other' ? product.varietyType : 'Commercial Grade'}
                       </p>
                     </div>
 
@@ -203,7 +203,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                   <span className="text-[10px] font-bold uppercase tracking-wider bg-[#E8F0E2] text-[#233D22] px-2.5 py-0.5 rounded border border-[#CCDBCB]">
                     {product.category?.name}
                   </span>
-                  {product.varietyType && (
+                  {product.varietyType && product.varietyType.toLowerCase() !== 'other' && (
                     <span className="text-[10px] font-bold uppercase tracking-wider bg-[#F7F5EE] text-[#484E40] px-2.5 py-0.5 rounded border border-[#DFD8CB]">
                       {product.varietyType}
                     </span>

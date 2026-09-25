@@ -814,7 +814,7 @@ export default function Home() {
                       </div>
                       <Link href="/marketplace" className="block">
                         <button className="w-full h-9 px-4 text-xs font-bold uppercase tracking-wider bg-[#233D22] text-[#FAF8F2] rounded-md hover:bg-[#1C321B] transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
-                          <span>Procure Lot</span>
+                          <span>Purchase</span>
                         </button>
                       </Link>
                     </div>

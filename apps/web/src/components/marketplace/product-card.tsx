@@ -67,6 +67,17 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
 
   const badgeText = product.seller?.sellerType === 'FPO' ? 'VERIFIED FPO' : 'QUALITY INSPECTED';
 
+  const productType =
+    product.category?.name
+      ? product.varietyType &&
+        product.varietyType.toLowerCase() !== 'other' &&
+        product.varietyType.toLowerCase() !== product.name.toLowerCase()
+        ? `${product.category.name} • ${product.varietyType}`
+        : product.category.name
+      : product.varietyType && product.varietyType.toLowerCase() !== 'other'
+      ? product.varietyType
+      : 'Agricultural Produce';
+
   return (
     <div className={`rounded-xl border overflow-hidden flex flex-col justify-between transition-all duration-200 ${
       isOutOfStock
@@ -127,8 +138,8 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
                   {product.name}
                 </h3>
               </Link>
-              <span className="text-xs text-[#5D6352] block mt-0.5 truncate">
-                {product.varietyType || product.category?.name || 'Standard Agricultural Lot'}
+              <span className="text-xs text-[#5D6352] block mt-0.5 truncate font-medium">
+                {productType}
               </span>
             </div>
           </div>
@@ -240,7 +251,7 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
             ) : (
               <Link href={`/marketplace/products/${product.id}`} className="flex-1">
                 <button className="w-full h-9 px-3 text-xs font-bold uppercase tracking-wider bg-[#233D22] hover:bg-[#1A2E19] text-[#FAF8F2] rounded-md transition-colors shadow-2xs flex items-center justify-center gap-1.5 cursor-pointer">
-                  <span>Procure Lot</span>
+                  <span>Purchase</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </Link>

@@ -136,7 +136,7 @@ export function ListingDetailsModal({
             <span className="bg-[#233D22]/90 text-[#FAF8F2] text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-sm backdrop-blur-xs">
               {product.category?.name || 'Produce'}
             </span>
-            {product.varietyType && (
+            {product.varietyType && product.varietyType.toLowerCase() !== 'other' && (
               <span className="bg-[#FFFFFF]/95 text-[#233D22] border border-[#DFD8CB] text-xs font-semibold px-2.5 py-1 rounded shadow-sm backdrop-blur-xs">
                 Variety: {product.varietyType}
               </span>
@@ -233,7 +233,7 @@ export function ListingDetailsModal({
               <div className="space-y-0.5">
                 <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">Variety Type</span>
                 <p className="font-semibold text-[#1E221B]">
-                  {product.varietyType || 'Standard'}
+                  {product.varietyType && product.varietyType.toLowerCase() !== 'other' ? product.varietyType : 'Commercial Grade'}
                 </p>
               </div>
 
