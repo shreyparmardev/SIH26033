@@ -5,9 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/components/providers/auth-provider';
 import { MarketplaceNavbar } from '@/components/marketplace/marketplace-navbar';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   ShieldAlert,
   Lock,
@@ -30,20 +27,22 @@ export function RoleGuard({
   fallbackTitle,
   fallbackMessage,
 }: RoleGuardProps) {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, loginAsDemoBuyer } = useAuth();
   const pathname = usePathname();
 
   // 1. Loading State
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950/50">
+      <div className="min-h-screen bg-[#F7F5EE] text-[#1E221B] flex flex-col">
         <MarketplaceNavbar />
-        <main className="container mx-auto px-4 py-12 max-w-4xl space-y-6">
-          <Skeleton className="h-10 w-64 rounded-xl" />
-          <Skeleton className="h-4 w-96 rounded-lg" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
-            <Skeleton className="h-44 w-full rounded-2xl" />
-            <Skeleton className="h-44 w-full rounded-2xl" />
+        <main className="flex-1 flex items-center justify-center p-4">
+          <div className="p-8 text-center border border-[#DFD8CB] rounded-lg bg-[#FCFAF6] max-w-sm w-full">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B7260] block mb-2">
+              Security Protocol
+            </span>
+            <p className="text-sm font-serif font-bold text-[#1E221B]">
+              Verifying credentials & trade permissions...
+            </p>
           </div>
         </main>
       </div>
@@ -58,50 +57,83 @@ export function RoleGuard({
     const returnUrl = encodeURIComponent(pathname || '/marketplace');
 
     return (
-      <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950/50 flex flex-col">
+      <div className="min-h-screen bg-[#F7F5EE] text-[#1E221B] flex flex-col">
         <MarketplaceNavbar />
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-          <Card className="w-full max-w-lg border-border/80 bg-card shadow-xl rounded-2xl p-6 sm:p-8 text-center space-y-6">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-600 border border-amber-500/20">
-              <Lock className="h-7 w-7" />
+        <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6">
+          <div className="w-full max-w-[460px] rounded-lg border border-[#DFD8CB] bg-[#FFFFFF] shadow-sm p-8 sm:p-10 text-center space-y-6">
+            {/* Top Security Pill & Icon */}
+            <div className="space-y-3">
+              <div className="flex justify-center">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#E2EDE2] text-[#233D22] border border-[#CCDBCB]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
+                  {isFarmerRoute ? 'Producer Gateway' : 'Verified Buyer Access'}
+                </span>
+              </div>
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#E2EDE2] text-[#233D22] border border-[#CCDBCB]">
+                <Lock className="h-5 w-5" />
+              </div>
             </div>
 
+            {/* Title & Description */}
             <div className="space-y-2">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+              <h1 className="text-2xl sm:text-[26px] font-serif font-bold text-[#1E221B]">
                 {fallbackTitle || `${roleTarget} Sign-In Required`}
               </h1>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-md mx-auto">
+              <p className="text-xs text-[#616857] leading-relaxed max-w-sm mx-auto">
                 {fallbackMessage ||
                   `This page is protected and requires an active ${roleTarget} account. Please sign in or register to continue.`}
               </p>
             </div>
 
+            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
               <Link href={`/login?returnUrl=${returnUrl}`} className="w-full sm:w-auto">
-                <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-2 shadow-sm text-xs h-10 px-5">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto h-10 px-5 bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center gap-2 transition-colors shadow-sm cursor-pointer"
+                >
                   <span>Sign In to Continue</span>
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
               </Link>
               <Link
                 href={`/register?role=${roleParam}&returnUrl=${returnUrl}`}
                 className="w-full sm:w-auto"
               >
-                <Button variant="outline" className="w-full sm:w-auto text-xs h-10 px-5 border-border/80">
+                <button
+                  type="button"
+                  className="w-full sm:w-auto h-10 px-5 border border-[#DFD8CB] bg-[#F7F5EE] hover:bg-[#EAE4D6] text-[#233D22] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center transition-colors cursor-pointer"
+                >
                   Register as {roleTarget}
-                </Button>
+                </button>
               </Link>
             </div>
 
-            <div className="pt-2 border-t border-border/60 text-center">
+            {/* Quick Demo Buyer Shortcut */}
+            {!isFarmerRoute && (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await loginAsDemoBuyer();
+                  }}
+                  className="text-[11px] font-semibold text-[#8B4513] hover:underline cursor-pointer"
+                >
+                  ⚡ Instant Demo Sign-In as Verified Buyer
+                </button>
+              </div>
+            )}
+
+            {/* Return Link */}
+            <div className="pt-3 border-t border-[#ECE5D8] text-center">
               <Link
                 href="/marketplace"
-                className="text-xs text-muted-foreground hover:text-emerald-600 transition-colors inline-flex items-center gap-1 font-medium"
+                className="text-xs font-medium text-[#6B7260] hover:text-[#233D22] hover:underline transition-colors inline-flex items-center gap-1.5"
               >
                 &larr; Back to Public Marketplace
               </Link>
             </div>
-          </Card>
+          </div>
         </main>
       </div>
     );
@@ -120,16 +152,24 @@ export function RoleGuard({
       allowedRoles.some((r) => r === 'FARMER' || r === 'FPO');
 
     return (
-      <div className="min-h-screen bg-zinc-50/50 dark:bg-zinc-950/50 flex flex-col">
+      <div className="min-h-screen bg-[#F7F5EE] text-[#1E221B] flex flex-col">
         <MarketplaceNavbar />
-        <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-          <Card className="w-full max-w-lg border-border/80 bg-card shadow-xl rounded-2xl p-6 sm:p-8 text-center space-y-6">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-600 border border-rose-500/20">
-              <ShieldAlert className="h-7 w-7" />
+        <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6">
+          <div className="w-full max-w-[480px] rounded-lg border border-[#DFD8CB] bg-[#FFFFFF] shadow-sm p-8 sm:p-10 text-center space-y-6">
+            <div className="space-y-3">
+              <div className="flex justify-center">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-[#FDF2F2] text-[#9B1C1C] border border-[#F8B4B4]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span>
+                  Access Restricted
+                </span>
+              </div>
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#FDF2F2] text-[#9B1C1C] border border-[#F8B4B4]">
+                <ShieldAlert className="h-5 w-5" />
+              </div>
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+              <h1 className="text-2xl sm:text-[26px] font-serif font-bold text-[#1E221B]">
                 {isFarmerTryingBuyerAction
                   ? 'Buyer Account Required'
                   : isBuyerTryingFarmerAction
@@ -137,18 +177,18 @@ export function RoleGuard({
                   : 'Access Restricted'}
               </h1>
 
-              <div className="p-3.5 rounded-xl bg-muted/60 border border-border/60 text-xs text-muted-foreground leading-relaxed text-left">
+              <div className="p-4 rounded-lg bg-[#FAF8F2] border border-[#DFD8CB] text-xs text-[#52594B] leading-relaxed text-left">
                 {isFarmerTryingBuyerAction ? (
                   <p>
                     You are currently signed in with a <strong>Farmer/Producer</strong> account (
-                    <span className="font-mono text-foreground">{user.email}</span>).
+                    <span className="font-mono text-[#1E221B]">{user.email}</span>).
                     Farmer accounts list produce for sale and fulfill consignments. Purchasing features
                     (Cart, Checkout, and Buyer Orders) require a <strong>Buyer</strong> account.
                   </p>
                 ) : isBuyerTryingFarmerAction ? (
                   <p>
                     You are currently signed in with a <strong>Buyer</strong> account (
-                    <span className="font-mono text-foreground">{user.email}</span>). Producer
+                    <span className="font-mono text-[#1E221B]">{user.email}</span>). Producer
                     dashboards, listing management, and carrier fulfillment actions are reserved for
                     registered <strong>Farmers and FPOs</strong>.
                   </p>
@@ -169,16 +209,22 @@ export function RoleGuard({
                     href={`/login?returnUrl=${encodeURIComponent(pathname || '/cart')}`}
                     className="w-full sm:w-auto"
                   >
-                    <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-10 px-5 gap-1.5 shadow-sm">
-                      <ShoppingBag className="h-4 w-4" />
+                    <button
+                      type="button"
+                      className="w-full sm:w-auto h-10 px-5 bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                    >
+                      <ShoppingBag className="h-3.5 w-3.5" />
                       <span>Sign In as Buyer</span>
-                    </Button>
+                    </button>
                   </Link>
                   <Link href="/seller/orders" className="w-full sm:w-auto">
-                    <Button variant="outline" className="w-full sm:w-auto text-xs h-10 px-5 border-border/80 gap-1.5">
-                      <Tractor className="h-4 w-4" />
+                    <button
+                      type="button"
+                      className="w-full sm:w-auto h-10 px-5 border border-[#DFD8CB] bg-[#F7F5EE] hover:bg-[#EAE4D6] text-[#233D22] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Tractor className="h-3.5 w-3.5" />
                       <span>Producer Orders</span>
-                    </Button>
+                    </button>
                   </Link>
                 </>
               ) : isBuyerTryingFarmerAction ? (
@@ -187,27 +233,45 @@ export function RoleGuard({
                     href={`/login?returnUrl=${encodeURIComponent(pathname || '/seller/orders')}`}
                     className="w-full sm:w-auto"
                   >
-                    <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs h-10 px-5 gap-1.5 shadow-sm">
-                      <Tractor className="h-4 w-4" />
+                    <button
+                      type="button"
+                      className="w-full sm:w-auto h-10 px-5 bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center gap-1.5 transition-colors shadow-sm cursor-pointer"
+                    >
+                      <Tractor className="h-3.5 w-3.5" />
                       <span>Sign In as Farmer</span>
-                    </Button>
+                    </button>
                   </Link>
                   <Link href="/marketplace" className="w-full sm:w-auto">
-                    <Button variant="outline" className="w-full sm:w-auto text-xs h-10 px-5 border-border/80 gap-1.5">
-                      <Store className="h-4 w-4" />
+                    <button
+                      type="button"
+                      className="w-full sm:w-auto h-10 px-5 border border-[#DFD8CB] bg-[#F7F5EE] hover:bg-[#EAE4D6] text-[#233D22] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Store className="h-3.5 w-3.5" />
                       <span>Marketplace</span>
-                    </Button>
+                    </button>
                   </Link>
                 </>
               ) : (
                 <Link href="/marketplace" className="w-full sm:w-auto">
-                  <Button className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-10 px-5">
+                  <button
+                    type="button"
+                    className="w-full sm:w-auto h-10 px-5 bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] text-xs font-bold uppercase tracking-wider rounded inline-flex items-center justify-center transition-colors shadow-sm cursor-pointer"
+                  >
                     Return to Marketplace
-                  </Button>
+                  </button>
                 </Link>
               )}
             </div>
-          </Card>
+
+            <div className="pt-3 border-t border-[#ECE5D8] text-center">
+              <Link
+                href="/marketplace"
+                className="text-xs font-medium text-[#6B7260] hover:text-[#233D22] hover:underline transition-colors inline-flex items-center gap-1.5"
+              >
+                &larr; Back to Public Marketplace
+              </Link>
+            </div>
+          </div>
         </main>
       </div>
     );

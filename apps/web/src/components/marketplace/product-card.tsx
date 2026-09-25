@@ -89,16 +89,13 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
             </div>
           )}
 
-          {/* Out of Stock Top-Left Badge */}
-          {isOutOfStock ? (
-            <span className="absolute top-2.5 left-2.5 bg-[#B91C1C] text-[#FAF8F2] text-[10px] font-sans font-bold px-2.5 py-0.5 rounded uppercase tracking-wider shadow-xs z-20">
-              Out of Stock
-            </span>
-          ) : null}
-
           {/* Verification Badge */}
-          <span className="absolute top-2.5 right-2.5 bg-[#2E4221] text-[#FAF8F2] text-[10px] font-sans font-bold px-2 py-0.5 rounded uppercase tracking-wider pointer-events-none z-20">
-            {badgeText}
+          <span className={`absolute top-2.5 right-2.5 text-[10px] font-sans font-bold px-2 py-0.5 rounded uppercase tracking-wider pointer-events-none z-20 ${
+            landedCost?.isEconomicallyRecommended && !isOutOfStock
+              ? 'bg-[#1B4D20] text-[#FAF8F2] shadow-sm ring-1 ring-emerald-300'
+              : 'bg-[#2E4221] text-[#FAF8F2]'
+          }`}>
+            {landedCost?.isEconomicallyRecommended && !isOutOfStock ? '★ BEST VALUE ROUTE' : badgeText}
           </span>
         </div>
 
@@ -168,6 +165,11 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
             }`}>
               {isOutOfStock ? 'Out of Stock' : displayPrice ? `${displayPrice} / Qtl` : 'Price on request'}
             </span>
+            {landedCost && !isOutOfStock && landedCost.logisticsCostPerQuintal > 0 && (
+              <span className="block text-[10px] text-[#4A6B32] font-medium leading-tight mt-0.5">
+                Incl. ₹{Math.round(landedCost.logisticsCostPerQuintal)} freight ({landedCost.roadDistanceKm} km)
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2">

@@ -281,18 +281,39 @@ export class AiController {
   async calculateMarketplaceLandedCost(
     @Body()
     body: {
-      buyerDestination: { state?: string; city?: string; district?: string };
+      buyerDestination?: { state?: string; city?: string; district?: string };
+      destinationCity?: string;
+      destinationState?: string;
+      destinationDistrict?: string;
       productIds?: string[];
       commodity?: string;
+      categoryId?: string;
+      originState?: string;
+      originDistrict?: string;
+      minPrice?: number;
+      maxPrice?: number;
       quantityQuintals?: number;
     },
     @CurrentUser() user?: AuthUser,
   ) {
+    const destCity = body.buyerDestination?.city || body.destinationCity;
+    const destState = body.buyerDestination?.state || body.destinationState;
+    const destDistrict = body.buyerDestination?.district || body.destinationDistrict || destCity;
+
     return this.marketplaceLandedCostService.calculateLandedCosts({
-      buyerDestination: body.buyerDestination || {},
+      buyerDestination: {
+        city: destCity,
+        state: destState,
+        district: destDistrict,
+      },
       userId: user?.sub,
       productIds: body.productIds,
       commodity: body.commodity,
+      categoryId: body.categoryId,
+      originState: body.originState,
+      originDistrict: body.originDistrict,
+      minPrice: body.minPrice,
+      maxPrice: body.maxPrice,
       quantityQuintals: body.quantityQuintals,
     });
   }

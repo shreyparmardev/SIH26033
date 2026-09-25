@@ -8,10 +8,17 @@ async function main() {
     include: { buyerProfile: true },
   });
 
-  const sellerUser = await prisma.user.findUnique({
+  let sellerUser = await prisma.user.findUnique({
     where: { email: 'demo.producer@sih26033.org' },
     include: { sellerProfile: true },
   });
+
+  if (!sellerUser?.sellerProfile) {
+    sellerUser = await prisma.user.findFirst({
+      where: { role: 'FARMER', sellerProfile: { isNot: null } },
+      include: { sellerProfile: true },
+    });
+  }
 
   if (!buyerUser?.buyerProfile || !sellerUser?.sellerProfile) {
     console.error('Buyer or seller profile not found');

@@ -69,6 +69,11 @@ export class MarketplaceLandedCostService {
     userId?: string;
     productIds?: string[];
     commodity?: string;
+    categoryId?: string;
+    originState?: string;
+    originDistrict?: string;
+    minPrice?: number;
+    maxPrice?: number;
     quantityQuintals?: number;
   }): Promise<MarketplaceLandedCostResult> {
     const qty = Math.max(0.1, params.quantityQuintals || 10);
@@ -103,7 +108,7 @@ export class MarketplaceLandedCostService {
       source = 'DEFAULT_DEMO';
     }
 
-    // 2. Query Candidate Marketplace Products
+    // 2. Query Candidate Marketplace Products with active filters
     const whereClause: any = {
       status: 'ACTIVE',
     };
@@ -112,11 +117,30 @@ export class MarketplaceLandedCostService {
       whereClause.id = { in: params.productIds };
     }
 
+    if (params.categoryId) {
+      whereClause.categoryId = params.categoryId;
+    }
+
+    if (params.originState) {
+      whereClause.state = { equals: params.originState, mode: 'insensitive' };
+    }
+
+    if (params.originDistrict) {
+      whereClause.district = { equals: params.originDistrict, mode: 'insensitive' };
+    }
+
+    if (params.minPrice !== undefined || params.maxPrice !== undefined) {
+      whereClause.price = {};
+      if (params.minPrice !== undefined) whereClause.price.gte = params.minPrice;
+      if (params.maxPrice !== undefined) whereClause.price.lte = params.maxPrice;
+    }
+
     if (params.commodity && params.commodity.trim()) {
       const comm = params.commodity.trim();
       whereClause.OR = [
         { name: { contains: comm, mode: 'insensitive' } },
         { category: { name: { contains: comm, mode: 'insensitive' } } },
+        { varietyType: { contains: comm, mode: 'insensitive' } },
       ];
     }
 
@@ -127,7 +151,7 @@ export class MarketplaceLandedCostService {
         seller: true,
         inventory: true,
       },
-      take: 30,
+      take: 120,
     });
 
     // 3. Evaluate each product's landed cost
@@ -239,26 +263,78 @@ export class MarketplaceLandedCostService {
       p.rankByListPrice = idx + 1;
     });
 
-    // Rank by Total Landed Cost (Primary Criterion)
-    evaluatedProducts.sort((a, b) => a.totalLandedCostPerQuintal - b.totalLandedCostPerQuintal);
+    // 5. Intelligent Destination & Scope-Aware Ranking
+    const isCategoryScoped = Boolean(params.categoryId || params.commodity);
+    const isStateScoped = Boolean(params.originState || params.originDistrict);
+
+    evaluatedProducts.sort((a, b) => {
+      const aAvailable = a.availableQuantity > 0 && a.productPricePerQuintal > 0;
+      const bAvailable = b.availableQuantity > 0 && b.productPricePerQuintal > 0;
+      if (aAvailable && !bAvailable) return -1;
+      if (!aAvailable && bAvailable) return 1;
+      if (!aAvailable && !bAvailable) return 0;
+
+      // When scoped to a category, commodity, or origin state, rank strictly by total landed cost
+      if (isCategoryScoped || isStateScoped) {
+        return a.totalLandedCostPerQuintal - b.totalLandedCostPerQuintal;
+      }
+
+      // In "All Produce" cross-category mode:
+      // 1) Primary commercial/food crops are prioritized over animal fodder
+      const aIsFodder = a.category.toLowerCase().includes('fodder');
+      const bIsFodder = b.category.toLowerCase().includes('fodder');
+      if (!aIsFodder && bIsFodder) return -1;
+      if (aIsFodder && !bIsFodder) return 1;
+
+      // 2) Regional logistics advantage: Local state match provides intra-state freight savings & zero border delay
+      const aIsLocal = a.originState.toLowerCase() === destState.toLowerCase();
+      const bIsLocal = b.originState.toLowerCase() === destState.toLowerCase();
+      if (aIsLocal && !bIsLocal) return -1;
+      if (!aIsLocal && bIsLocal) return 1;
+
+      // 3) Short-haul transit corridor (<= 400 km)
+      const aShortHaul = a.roadDistanceKm <= 400;
+      const bShortHaul = b.roadDistanceKm <= 400;
+      if (aShortHaul && !bShortHaul) return -1;
+      if (!aShortHaul && bShortHaul) return 1;
+
+      // 4) Total landed cost per quintal
+      return a.totalLandedCostPerQuintal - b.totalLandedCostPerQuintal;
+    });
+
     evaluatedProducts.forEach((p, idx) => {
       p.rankByLandedCost = idx + 1;
-      p.isEconomicallyRecommended = idx === 0;
+      p.isEconomicallyRecommended = idx === 0 && p.availableQuantity > 0 && p.productPricePerQuintal > 0;
 
       if (p.isEconomicallyRecommended) {
-        p.economicNote = `Economically optimal: Lowest total delivered landed cost (₹${p.totalLandedCostPerQuintal}/Q) to ${destCity}.`;
+        if (p.originState.toLowerCase() === destState.toLowerCase()) {
+          p.economicNote = `Regional logistics advantage: Local sourcing within ${destState} minimizes road transit (${p.roadDistanceKm} km) and freight costs.`;
+        } else if (p.roadDistanceKm <= 400) {
+          p.economicNote = `Optimal regional corridor: Shortest transit route to ${destCity} (${p.roadDistanceKm} km) with ₹${p.logisticsCostPerQuintal}/Q logistics.`;
+        } else {
+          p.economicNote = `Economically optimal: Lowest total delivered landed cost (₹${p.totalLandedCostPerQuintal}/Q) to ${destCity}.`;
+        }
       } else if (p.rankByListPrice < p.rankByLandedCost) {
-        p.economicNote = `Lower list price (₹${p.productPricePerQuintal}/Q) is wiped out by ₹${p.logisticsCostPerQuintal}/Q freight over ${p.roadDistanceKm} km.`;
+        p.economicNote = `Lower list price (₹${p.productPricePerQuintal}/Q) is offset by ₹${p.logisticsCostPerQuintal}/Q freight over ${p.roadDistanceKm} km.`;
       } else {
         p.economicNote = `Standard delivery corridor (${p.roadDistanceKm} km); ₹${p.logisticsCostPerQuintal}/Q logistics applies.`;
       }
     });
 
-    const recommended = evaluatedProducts.find((p) => p.isEconomicallyRecommended) || evaluatedProducts[0] || null;
+    const recommended = evaluatedProducts.find((p) => p.isEconomicallyRecommended) || (evaluatedProducts.length > 0 && evaluatedProducts[0].productPricePerQuintal > 0 ? evaluatedProducts[0] : null);
 
     let summary = '';
     if (recommended) {
-      summary = `Delivering to ${destCity}, ${destState}: ${recommended.productName} from ${recommended.originLocationDisplay} achieves the lowest total landed cost of ₹${recommended.totalLandedCostPerQuintal}/quintal (₹${recommended.productPricePerQuintal} product + ₹${recommended.logisticsCostPerQuintal} logistics).`;
+      let scopeDescription = 'All Produce';
+      if (params.categoryId) {
+        scopeDescription = recommended.category;
+      } else if (params.originState) {
+        scopeDescription = `Origin: ${params.originState}`;
+      } else if (params.commodity) {
+        scopeDescription = `"${params.commodity}"`;
+      }
+
+      summary = `Delivering to ${destCity}, ${destState} [${scopeDescription}]: ${recommended.productName} from ${recommended.originLocationDisplay} achieves the lowest total landed cost of ₹${recommended.totalLandedCostPerQuintal}/quintal (₹${recommended.productPricePerQuintal} product + ₹${recommended.logisticsCostPerQuintal} logistics).`;
     }
 
     return {

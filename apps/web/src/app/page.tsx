@@ -201,8 +201,8 @@ export default function Home() {
           <div className="relative z-10 max-w-[1600px] mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 min-h-125 sm:min-h-140 lg:min-h-155">
               
-              {/* Left Column: Metric Module with Architectural Divider */}
-              <div className="lg:col-span-3 border-b lg:border-b-0 lg:border-r border-white/20 p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
+              {/* Left Column: Metric Module */}
+              <div className="lg:col-span-3 p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
                 <span className="text-xs uppercase tracking-widest font-medium text-[#E0EAD8]/80 font-sans">
                   Cultivating over
                 </span>

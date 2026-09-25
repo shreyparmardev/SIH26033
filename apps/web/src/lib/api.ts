@@ -2264,18 +2264,59 @@ export async function getMarketplaceLandedCost(
   payload: {
     destinationCity?: string;
     destinationState?: string;
+    destinationDistrict?: string;
     commodity?: string;
+    categoryId?: string;
+    originState?: string;
+    originDistrict?: string;
+    minPrice?: number;
+    maxPrice?: number;
     quantityQuintals?: number;
+    productIds?: string[];
+    buyerDestination?: {
+      city?: string;
+      state?: string;
+      district?: string;
+    };
   },
   token?: string,
 ): Promise<MarketplaceLandedCostResult> {
+  const destCity = payload.buyerDestination?.city || payload.destinationCity || 'Mumbai';
+  const destState = payload.buyerDestination?.state || payload.destinationState || 'Maharashtra';
+  const destDistrict = payload.buyerDestination?.district || destCity;
+
+  const normalizedPayload = {
+    ...payload,
+    destinationCity: destCity,
+    destinationState: destState,
+    destinationDistrict: destDistrict,
+    buyerDestination: {
+      city: destCity,
+      state: destState,
+      district: destDistrict,
+    },
+  };
+
+  let authToken = token || getStoredToken();
+  if (!authToken) {
+    try {
+      const demo = await demoLoginBuyer();
+      authToken = demo.token;
+      if (typeof window !== 'undefined' && authToken) {
+        setStoredToken(authToken);
+      }
+    } catch {
+      // Continue without token
+    }
+  }
+
   const res = await fetch(`${API_BASE_URL}/ai/marketplace-landed-cost`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      ...getAuthHeaders(token),
+      ...getAuthHeaders(authToken || undefined),
     },
-    body: JSON.stringify(payload),
+    body: JSON.stringify(normalizedPayload),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {

@@ -69,18 +69,38 @@ function MarketplaceContent() {
     data: landedCostData,
     isLoading: isLandedCostLoading,
   } = useQuery<MarketplaceLandedCostResult>({
-    queryKey: ['marketplace-landed-cost', buyerCity, buyerState, filters.search],
+    queryKey: [
+      'marketplace-landed-cost',
+      buyerCity,
+      buyerState,
+      filters.search,
+      filters.categoryId,
+      filters.state,
+      filters.district,
+      filters.minPrice,
+      filters.maxPrice,
+    ],
     queryFn: () =>
       getMarketplaceLandedCost(
         {
           destinationCity: buyerCity,
           destinationState: buyerState,
+          buyerDestination: {
+            city: buyerCity,
+            state: buyerState,
+            district: buyerCity,
+          },
           commodity: filters.search || undefined,
+          categoryId: filters.categoryId || undefined,
+          originState: filters.state || undefined,
+          originDistrict: filters.district || undefined,
+          minPrice: filters.minPrice,
+          maxPrice: filters.maxPrice,
         },
         token || undefined,
       ),
     enabled: isLandedCostMode,
-    staleTime: 60000,
+    staleTime: 30000,
   });
 
   const updateFilters = (newFilters: Partial<MarketplaceQueryParams>) => {
@@ -141,8 +161,22 @@ function MarketplaceContent() {
 
   const sortedProducts = [...products].sort((a, b) => {
     if (isLandedCostMode && landedCostMap.size > 0) {
+      const isAOut = a.availableQuantity <= 0 || a.status === 'OUT_OF_STOCK';
+      const isBOut = b.availableQuantity <= 0 || b.status === 'OUT_OF_STOCK';
+      if (!isAOut && isBOut) return -1;
+      if (isAOut && !isBOut) return 1;
+
       const itemA = landedCostMap.get(a.id);
       const itemB = landedCostMap.get(b.id);
+
+      // Prioritize the top economically recommended product
+      if (itemA?.isEconomicallyRecommended && !itemB?.isEconomicallyRecommended) return -1;
+      if (!itemA?.isEconomicallyRecommended && itemB?.isEconomicallyRecommended) return 1;
+
+      const rankA = itemA ? itemA.rankByLandedCost : Infinity;
+      const rankB = itemB ? itemB.rankByLandedCost : Infinity;
+      if (rankA !== rankB) return rankA - rankB;
+
       const costA = itemA ? itemA.totalLandedCostPerQuintal : Infinity;
       const costB = itemB ? itemB.totalLandedCostPerQuintal : Infinity;
       return costA - costB;
@@ -213,9 +247,16 @@ function MarketplaceContent() {
                       <option value="Hyderabad">Hyderabad, Telangana</option>
                     </select>
                   </div>
-                  <span className="text-[10px] text-[#7A8070] block">
-                    Calculates: Farmgate Price + Commercial Road Freight + Handling
-                  </span>
+                  <div className="flex items-center justify-between gap-1 text-[10px]">
+                    <span className="text-[#7A8070]">
+                      Calculates: Farmgate Price + Road Freight + Handling
+                    </span>
+                    {isLandedCostLoading && (
+                      <span className="text-[#2E7D32] font-semibold animate-pulse">
+                        Updating rates...
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -259,13 +300,28 @@ function MarketplaceContent() {
             {isLandedCostMode && landedCostData && (
               <div className="mb-6 rounded-lg border border-[#CCDBCB] bg-[#F0F5EE] p-4 space-y-2">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="bg-[#233D22] text-[#FAF8F2] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">
                       Landed Cost Engine
                     </span>
                     <span className="text-xs font-bold text-[#1E221B]">
                       Destination: {landedCostData.buyerDestination.city}, {landedCostData.buyerDestination.state}
                     </span>
+                    {categories.find((c) => c.id === filters.categoryId) && (
+                      <span className="bg-[#E2ECE0] text-[#1E3B1C] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-[#CCDBCB]">
+                        Scope: {categories.find((c) => c.id === filters.categoryId)?.name}
+                      </span>
+                    )}
+                    {!filters.categoryId && filters.state && (
+                      <span className="bg-[#E2ECE0] text-[#1E3B1C] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-[#CCDBCB]">
+                        Origin: {filters.state}
+                      </span>
+                    )}
+                    {isLandedCostLoading && (
+                      <span className="text-[10px] text-[#2E7D32] font-semibold animate-pulse">
+                        Recalculating corridor...
+                      </span>
+                    )}
                   </div>
                   <span className="text-[10px] font-mono text-[#5A6352] bg-[#FFFFFF] px-2 py-0.5 rounded border border-[#DFD8CB]">
                     {landedCostData.calculationFormula}

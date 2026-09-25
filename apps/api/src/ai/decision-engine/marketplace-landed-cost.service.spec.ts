@@ -185,4 +185,67 @@ describe('MarketplaceLandedCostService', () => {
     expect(estimateSpy).not.toHaveBeenCalled();
     expect(result.products[0].costBreakdown.freightPerQuintal).toBeGreaterThan(0);
   });
+
+  it('should filter candidate products by categoryId and originState in where clause', async () => {
+    mockPrisma.product.findMany.mockResolvedValue([]);
+
+    await service.calculateLandedCosts({
+      buyerDestination: { state: 'Maharashtra', city: 'Pune' },
+      categoryId: 'cat-veg-123',
+      originState: 'Madhya Pradesh',
+      originDistrict: 'Indore',
+    });
+
+    expect(mockPrisma.product.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          status: 'ACTIVE',
+          categoryId: 'cat-veg-123',
+          state: { equals: 'Madhya Pradesh', mode: 'insensitive' },
+          district: { equals: 'Indore', mode: 'insensitive' },
+        }),
+      }),
+    );
+  });
+
+  it('should recommend regional intra-state product over long-haul animal fodder across produce', async () => {
+    mockPrisma.product.findMany.mockResolvedValue([
+      {
+        id: 'prod-fodder',
+        name: 'Berseem Animal Fodder',
+        price: 190,
+        unit: 'QUINTAL',
+        state: 'Haryana',
+        district: 'Ambala',
+        category: { name: 'Fodder Crops' },
+        seller: { businessName: 'Haryana Grower' },
+        inventory: { availableQuantity: 50 },
+      },
+      {
+        id: 'prod-wheat',
+        name: 'Chhatarpur Sharbati Wheat',
+        price: 2370,
+        unit: 'QUINTAL',
+        state: 'Madhya Pradesh',
+        district: 'Chhatarpur',
+        category: { name: 'Cereals & Grains' },
+        seller: { businessName: 'MP Kisan FPO' },
+        inventory: { availableQuantity: 100 },
+      },
+    ]);
+
+    // Destination is Indore, Madhya Pradesh
+    const result = await service.calculateLandedCosts({
+      buyerDestination: {
+        state: 'Madhya Pradesh',
+        city: 'Indore',
+      },
+      quantityQuintals: 10,
+    });
+
+    expect(result.recommendedProduct).toBeDefined();
+    expect(result.recommendedProduct!.productId).toBe('prod-wheat');
+    expect(result.recommendedProduct!.originState).toBe('Madhya Pradesh');
+    expect(result.recommendedProduct!.economicNote).toContain('Regional logistics advantage');
+  });
 });
