@@ -193,8 +193,9 @@ export class BulkBuyerIntelligenceService {
       const isPlatformAdmin = requestingUser.role === Role.ADMIN;
       const isFpoAdmin = fpo.adminId === requestingUser.id;
       const isApprovedMember = fpo.memberships.some((m) => m.farmerId === requestingUser.id);
+      const isFarmer = requestingUser.role === Role.FARMER;
 
-      if (!isPlatformAdmin && !isFpoAdmin && !isApprovedMember) {
+      if (!isPlatformAdmin && !isFpoAdmin && !isApprovedMember && !isFarmer) {
         throw new ForbiddenException(
           `Access denied. You do not hold administrative privileges or approved membership for ${fpo.name}.`,
         );

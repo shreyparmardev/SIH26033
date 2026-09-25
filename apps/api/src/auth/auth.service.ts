@@ -17,9 +17,12 @@ export class AuthService {
       throw new ForbiddenException('Admin registration is not allowed via public endpoint');
     }
 
+    const normalizedEmail = dto.email.trim().toLowerCase();
+    const normalizedMobile = dto.mobile ? dto.mobile.trim() : undefined;
+
     const existingUser = await this.prisma.user.findFirst({
       where: {
-        OR: [{ email: dto.email }, ...(dto.mobile ? [{ mobile: dto.mobile }] : [])],
+        OR: [{ email: normalizedEmail }, ...(normalizedMobile ? [{ mobile: normalizedMobile }] : [])],
       },
     });
 
@@ -29,43 +32,51 @@ export class AuthService {
 
     const passwordHash = await argon2.hash(dto.password);
 
-    const user = await this.prisma.user.create({
-      data: {
-        email: dto.email,
-        mobile: dto.mobile,
-        passwordHash,
-        role: dto.role,
-        // For FARMER or FPO, we initialize the SellerProfile automatically.
-        // For BUYER, we initialize the BuyerProfile automatically.
-        ...(dto.role === Role.FARMER || dto.role === Role.FPO
-          ? {
-              sellerProfile: {
-                create: {
-                  sellerType: dto.role === Role.FARMER ? 'FARMER' : 'FPO',
-                  businessName: dto.name,
+    try {
+      const user = await this.prisma.user.create({
+        data: {
+          email: normalizedEmail,
+          mobile: normalizedMobile,
+          passwordHash,
+          role: dto.role,
+          // For FARMER or FPO, we initialize the SellerProfile automatically.
+          // For BUYER, we initialize the BuyerProfile automatically.
+          ...(dto.role === Role.FARMER || dto.role === Role.FPO
+            ? {
+                sellerProfile: {
+                  create: {
+                    sellerType: dto.role === Role.FARMER ? 'FARMER' : 'FPO',
+                    businessName: dto.name,
+                  },
                 },
-              },
-            }
-          : {}),
-        ...(dto.role === Role.BUYER
-          ? {
-              buyerProfile: {
-                create: {
-                  businessName: dto.name,
+              }
+            : {}),
+          ...(dto.role === Role.BUYER
+            ? {
+                buyerProfile: {
+                  create: {
+                    businessName: dto.name,
+                  },
                 },
-              },
-            }
-          : {}),
-      },
-    });
+              }
+            : {}),
+        },
+      });
 
-    const { passwordHash: _, ...sanitizedUser } = user;
-    return sanitizedUser;
+      const { passwordHash: _, ...sanitizedUser } = user;
+      return sanitizedUser;
+    } catch (error: any) {
+      if (error?.code === 'P2002') {
+        throw new ConflictException('User with this email or mobile already exists');
+      }
+      throw error;
+    }
   }
 
   async login(dto: LoginDto) {
+    const normalizedEmail = dto.email.trim().toLowerCase();
     const user = await this.prisma.user.findUnique({
-      where: { email: dto.email },
+      where: { email: normalizedEmail },
     });
 
     if (!user) {
