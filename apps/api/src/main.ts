@@ -34,13 +34,33 @@ async function bootstrap() {
   // Global API prefix
   app.setGlobalPrefix('api/v1');
 
-  // Enable CORS for frontend (supports single origin or comma-separated list)
+  // Enable CORS for frontend (supports single origin, comma-separated list, Vercel deployments, and localhost)
   const rawCors = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
-  const corsOrigins = rawCors.includes(',')
+  const configuredOrigins = rawCors.includes(',')
     ? rawCors.split(',').map((o) => o.trim()).filter(Boolean)
-    : rawCors;
+    : [rawCors.trim()];
+
   app.enableCors({
-    origin: corsOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, SSR)
+      if (!origin) return callback(null, true);
+
+      // Check configured origins (or wildcard)
+      if (configuredOrigins.includes(origin) || configuredOrigins.includes('*')) {
+        return callback(null, true);
+      }
+
+      // Automatically allow all Vercel preview/production deployments and local development
+      if (
+        origin.endsWith('.vercel.app') ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('https://localhost:')
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(null, false);
+    },
     credentials: true,
   });
 
