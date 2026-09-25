@@ -36,19 +36,23 @@ export function FilterSidebar({
   isLoading,
 }: FilterSidebarProps) {
   const [searchInput, setSearchInput] = useState(filters.search || '');
-  const [minPriceInput, setMinPriceInput] = useState(filters.minPrice?.toString() || '');
-  const [maxPriceInput, setMaxPriceInput] = useState(filters.maxPrice?.toString() || '');
+  const [minPriceInput, setMinPriceInput] = useState(
+    filters.minPrice !== undefined ? (filters.minPrice / 100).toString() : ''
+  );
+  const [maxPriceInput, setMaxPriceInput] = useState(
+    filters.maxPrice !== undefined ? (filters.maxPrice / 100).toString() : ''
+  );
 
   useEffect(() => {
     setSearchInput(filters.search || '');
   }, [filters.search]);
 
   useEffect(() => {
-    setMinPriceInput(filters.minPrice?.toString() || '');
+    setMinPriceInput(filters.minPrice !== undefined ? (filters.minPrice / 100).toString() : '');
   }, [filters.minPrice]);
 
   useEffect(() => {
-    setMaxPriceInput(filters.maxPrice?.toString() || '');
+    setMaxPriceInput(filters.maxPrice !== undefined ? (filters.maxPrice / 100).toString() : '');
   }, [filters.maxPrice]);
 
   const availableStates = filterOptions?.states?.length
@@ -90,8 +94,8 @@ export function FilterSidebar({
     const max = maxPriceInput ? parseFloat(maxPriceInput) : undefined;
 
     onFilterChange({
-      minPrice: min !== undefined && !isNaN(min) && min >= 0 ? min : undefined,
-      maxPrice: max !== undefined && !isNaN(max) && max >= 0 ? max : undefined,
+      minPrice: min !== undefined && !isNaN(min) && min >= 0 ? min * 100 : undefined,
+      maxPrice: max !== undefined && !isNaN(max) && max >= 0 ? max * 100 : undefined,
       page: 1,
     });
   };
@@ -261,7 +265,7 @@ export function FilterSidebar({
       {/* Price Range */}
       <div>
         <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-[#52594B]">
-          Price Range (₹ / Quintal)
+          Price Range (₹ / kg)
         </label>
         <div className="flex items-center gap-2">
           <input

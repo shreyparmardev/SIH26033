@@ -64,7 +64,7 @@ export function ListingDetailsModal({
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0,
+      maximumFractionDigits: amount < 10 ? 2 : 0,
     }).format(amount);
   };
 
@@ -74,9 +74,10 @@ export function ListingDetailsModal({
     !isNaN(product.illustrativeFarmerListingReferenceInr) &&
     product.illustrativeFarmerListingReferenceInr > 0;
 
-  const formattedDemoPrice = hasDemoPrice
-    ? `${formatInr(product.illustrativeFarmerListingReferenceInr)} / quintal`
-    : 'Out of stock';
+  const formattedDemoPrice =
+    hasDemoPrice && product.illustrativeFarmerListingReferenceInr
+      ? `${formatInr(product.illustrativeFarmerListingReferenceInr / 100)} / kg`
+      : 'Out of stock';
 
   const locationDisplay =
     product.district && product.state
@@ -240,7 +241,7 @@ export function ListingDetailsModal({
                 <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">Selling Unit</span>
                 <p className="font-semibold text-[#1E221B] flex items-center gap-1">
                   <Scale className="h-3.5 w-3.5 text-[#233D22] shrink-0" />
-                  <span>{product.sellingUnit || 'Rs./Quintal'}</span>
+                  <span>Rs./kg</span>
                 </p>
               </div>
 

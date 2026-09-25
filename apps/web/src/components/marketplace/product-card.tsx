@@ -20,7 +20,7 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0,
+      maximumFractionDigits: amount < 10 ? 2 : 0,
     }).format(amount);
   };
 
@@ -37,10 +37,24 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
     product.status === 'ARCHIVED' ||
     (!hasDemoPrice && !landedCost && (!product.price || product.price <= 0));
 
-  const displayPrice = landedCost
-    ? formatInr(landedCost.totalLandedCostPerQuintal)
-    : hasDemoPrice
-    ? formatInr(product.illustrativeFarmerListingReferenceInr)
+  const calcPricePerKg = () => {
+    if (landedCost) {
+      return product.unit === 'KG'
+        ? landedCost.totalLandedCostPerQuintal / 10000
+        : landedCost.totalLandedCostPerQuintal / 100;
+    }
+    if (hasDemoPrice && product.illustrativeFarmerListingReferenceInr) {
+      return product.illustrativeFarmerListingReferenceInr / 100;
+    }
+    if (product.price && product.price > 0) {
+      return product.unit === 'KG' ? Number(product.price) : Number(product.price) / 100;
+    }
+    return null;
+  };
+
+  const pricePerKg = calcPricePerKg();
+  const displayPrice = pricePerKg !== null
+    ? formatInr(pricePerKg)
     : isOutOfStock
     ? 'Out of Stock'
     : 'Inquire';
@@ -163,11 +177,11 @@ export function ProductCard({ product, onQuickView, landedCost }: ProductCardPro
             <span className={`text-base font-serif font-bold ${
               isOutOfStock ? 'text-[#B91C1C]' : 'text-[#1E221B]'
             }`}>
-              {isOutOfStock ? 'Out of Stock' : displayPrice ? `${displayPrice} / Qtl` : 'Price on request'}
+              {isOutOfStock ? 'Out of Stock' : displayPrice ? `${displayPrice} / kg` : 'Price on request'}
             </span>
             {landedCost && !isOutOfStock && landedCost.logisticsCostPerQuintal > 0 && (
               <span className="block text-[10px] text-[#4A6B32] font-medium leading-tight mt-0.5">
-                Incl. ₹{Math.round(landedCost.logisticsCostPerQuintal)} freight ({landedCost.roadDistanceKm} km)
+                Incl. ₹{(landedCost.logisticsCostPerQuintal / 100).toFixed(1)}/kg freight ({landedCost.roadDistanceKm} km)
               </span>
             )}
           </div>

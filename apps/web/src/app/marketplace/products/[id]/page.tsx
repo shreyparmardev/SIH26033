@@ -33,7 +33,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0,
+      maximumFractionDigits: amount < 10 ? 2 : 0,
     }).format(amount);
   };
 
@@ -44,7 +44,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     product.illustrativeFarmerListingReferenceInr > 0;
 
   const demoPriceDisplay = hasDemoPrice
-    ? `${formatInr(product?.illustrativeFarmerListingReferenceInr)} / quintal`
+    ? `${formatInr(product?.illustrativeFarmerListingReferenceInr ? product.illustrativeFarmerListingReferenceInr / 100 : 0)} / kg`
     : 'Out of stock';
 
   const locationDisplay =
@@ -154,7 +154,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     <div className="rounded border border-[#DFD8CB] bg-[#F7F5EE] p-3">
                       <span className="text-[10px] uppercase font-bold text-[#7A8070] block">Trading Unit</span>
                       <p className="font-bold text-[#1E221B] mt-0.5">
-                        {product.sellingUnit || product.unit}
+                        Rs./kg
                       </p>
                     </div>
 
