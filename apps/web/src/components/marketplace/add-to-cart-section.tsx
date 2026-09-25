@@ -160,53 +160,97 @@ export function AddToCartSection({ product }: AddToCartSectionProps) {
   }
 
   // 3. Logged-in Buyer Experience
-  const lineTotal = product.price * quantity;
+  const formatInr = (amount: number | null | undefined) => {
+    if (amount === null || amount === undefined || isNaN(amount) || amount === 0) return '₹0';
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: amount % 1 !== 0 ? 2 : 0,
+    }).format(amount);
+  };
+
+  const calcPricePerKg = () => {
+    if (product.price && product.price > 0 && Number(product.price) <= 500) {
+      return Number(product.price);
+    }
+    if (hasValidPrice && product.illustrativeFarmerListingReferenceInr) {
+      return product.illustrativeFarmerListingReferenceInr / 100;
+    }
+    if (product.price && product.price > 0) {
+      return Number(product.price) > 500 ? Number(product.price) / 100 : Number(product.price);
+    }
+    return 0;
+  };
+
+  const unitPricePerKg = calcPricePerKg();
+  const lineTotal = unitPricePerKg * quantity;
 
   return (
     <div className="rounded-lg border border-[#DFD8CB] bg-[#FCFAF6] p-5 space-y-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#52594B]">
-          Procurement Quantity
-        </span>
-        <span className="text-xs text-[#6B7260]">
-          Available Stock: <strong className="text-[#1E221B]">{maxStock} {product.unit}</strong>
-        </span>
+      {/* Top Header: Title, Available Stock & Per-KG Unit Price */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#52594B]">
+            Procurement Quantity
+          </span>
+          <span className="text-xs text-[#6B7260]">
+            Available Stock: <strong className="text-[#1E221B]">{maxStock} {product.unit}</strong>
+          </span>
+        </div>
+
+        {/* Benchmark Rate per kg */}
+        <div className="flex items-center justify-between py-1.5 px-3 rounded bg-[#F4F0E6] border border-[#DFD8CB] text-xs">
+          <span className="text-[#7A8070] font-medium">Wholesale Listing Price:</span>
+          <span className="font-serif font-bold text-[#1E221B] text-sm">
+            {formatInr(unitPricePerKg)} <span className="font-sans text-xs font-normal text-[#5D6352]">/ kg</span>
+          </span>
+        </div>
       </div>
 
-      {/* Quantity Stepper */}
+      {/* Quantity Stepper & Batch Subtotal */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center rounded border border-[#DFD8CB] bg-[#FFFFFF]">
-          <button
-            type="button"
-            onClick={handleDecrement}
-            disabled={quantity <= 1 || mutation.isPending}
-            className="h-8 w-8 text-sm font-bold text-[#1E221B] hover:bg-[#F2EFE7] disabled:opacity-40"
-          >
-            -
-          </button>
-          <input
-            type="number"
-            min={1}
-            max={maxStock}
-            value={quantity}
-            onChange={handleQuantityChange}
-            disabled={mutation.isPending}
-            className="w-14 text-center text-xs font-bold text-[#1E221B] bg-transparent focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={handleIncrement}
-            disabled={quantity >= maxStock || mutation.isPending}
-            className="h-8 w-8 text-sm font-bold text-[#1E221B] hover:bg-[#F2EFE7] disabled:opacity-40"
-          >
-            +
-          </button>
+        <div className="flex items-center">
+          <div className="flex items-center rounded border border-[#DFD8CB] bg-[#FFFFFF]">
+            <button
+              type="button"
+              onClick={handleDecrement}
+              disabled={quantity <= 1 || mutation.isPending}
+              className="h-8 w-8 text-sm font-bold text-[#1E221B] hover:bg-[#F2EFE7] disabled:opacity-40 transition-colors cursor-pointer"
+            >
+              -
+            </button>
+            <input
+              type="number"
+              min={1}
+              max={maxStock}
+              value={quantity}
+              onChange={handleQuantityChange}
+              disabled={mutation.isPending}
+              className="w-14 text-center text-xs font-bold text-[#1E221B] bg-transparent focus:outline-none"
+            />
+            <button
+              type="button"
+              onClick={handleIncrement}
+              disabled={quantity >= maxStock || mutation.isPending}
+              className="h-8 w-8 text-sm font-bold text-[#1E221B] hover:bg-[#F2EFE7] disabled:opacity-40 transition-colors cursor-pointer"
+            >
+              +
+            </button>
+          </div>
+          <span className="ml-2 text-xs font-semibold text-[#5D6352] uppercase">
+            {product.unit.toLowerCase()}
+          </span>
         </div>
 
         <div className="flex-1 text-right">
-          <span className="text-[10px] text-[#7A8070] uppercase tracking-wider font-semibold block">Batch Subtotal</span>
+          <span className="text-[10px] text-[#7A8070] uppercase tracking-wider font-semibold block">
+            Batch Subtotal
+          </span>
           <span className="text-lg font-serif font-bold text-[#1E221B]">
-            ₹{lineTotal.toLocaleString('en-IN')}
+            {formatInr(lineTotal)}
+          </span>
+          <span className="text-[10px] text-[#6B7260] block font-sans">
+            ({quantity} {product.unit.toLowerCase()} @ {formatInr(unitPricePerKg)}/kg)
           </span>
         </div>
       </div>
@@ -233,12 +277,12 @@ export function AddToCartSection({ product }: AddToCartSectionProps) {
           type="button"
           onClick={handleAddToCart}
           disabled={mutation.isPending}
-          className="flex-1 h-11 bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] text-xs font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-70"
+          className="flex-1 h-11 bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] text-xs font-bold uppercase tracking-wider rounded transition-colors disabled:opacity-70 cursor-pointer shadow-2xs"
         >
           {mutation.isPending ? 'Reserving...' : 'Add to Procurement Cart'}
         </button>
         <Link href="/cart">
-          <button className="h-11 px-4 text-xs font-bold uppercase tracking-wider border border-[#233D22] text-[#233D22] rounded hover:bg-[#EAE4D6]">
+          <button className="h-11 px-4 text-xs font-bold uppercase tracking-wider border border-[#233D22] text-[#233D22] rounded hover:bg-[#EAE4D6] transition-colors cursor-pointer">
             Go to Cart
           </button>
         </Link>

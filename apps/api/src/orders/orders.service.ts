@@ -162,7 +162,14 @@ export class OrdersService {
         const orderItemsData = [];
 
         for (const item of items) {
-          const unitPrice = item.product.price; // authoritative DB price
+          let unitPrice = item.product.price; // authoritative DB price
+          const numPrice = unitPrice ? unitPrice.toNumber() : 0;
+          if (
+            item.product.illustrativeFarmerListingReferenceInr &&
+            numPrice === item.product.illustrativeFarmerListingReferenceInr.toNumber()
+          ) {
+            unitPrice = new Prisma.Decimal(numPrice / 100);
+          }
           const totalPrice = item.quantity.mul(unitPrice);
           orderTotal = orderTotal.add(totalPrice);
 

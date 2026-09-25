@@ -151,7 +151,14 @@ export class CartService {
     let subtotal = new Prisma.Decimal(0);
 
     const mappedItems = items.map((item) => {
-      const unitPrice = item.product.price;
+      let unitPrice = item.product.price;
+      const numPrice = unitPrice ? unitPrice.toNumber() : 0;
+      if (
+        item.product.illustrativeFarmerListingReferenceInr &&
+        numPrice === item.product.illustrativeFarmerListingReferenceInr.toNumber()
+      ) {
+        unitPrice = new Prisma.Decimal(numPrice / 100);
+      }
       const quantity = item.quantity;
       const lineTotal = quantity.mul(unitPrice);
       const availableStock = item.product.inventory
