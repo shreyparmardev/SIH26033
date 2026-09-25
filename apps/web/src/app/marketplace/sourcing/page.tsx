@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { MarketplaceNavbar } from '@/components/marketplace/marketplace-navbar';
 import { Button } from '@/components/ui/button';
+import { ArohaSelect } from '@/components/ui/aroha-select';
 import {
   createBuyerRequirement,
   getOpenBuyerRequirements,
@@ -210,17 +211,13 @@ function BuyerSourcingContent() {
                   <label className="block font-semibold text-[#1E221B] mb-1">
                     Commodity Needed
                   </label>
-                  <select
+                  <ArohaSelect
+                    id="sourcing-commodity-select"
                     value={commodity}
-                    onChange={(e) => setCommodity(e.target.value)}
-                    className="w-full h-9 px-3 rounded border border-[#DFD8CB] bg-[#F7F5EE] text-xs font-medium text-[#1E221B] focus:outline-none focus:border-[#233D22]"
-                  >
-                    {COMMODITIES.map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) => setCommodity(val)}
+                    options={COMMODITIES}
+                    triggerClassName="h-9 text-xs font-medium bg-[#F7F5EE] border-[#DFD8CB]"
+                  />
                 </div>
 
                 {/* Required Quantity & Target Budget */}
@@ -257,17 +254,13 @@ function BuyerSourcingContent() {
                     <label className="block font-semibold text-[#1E221B] mb-1">
                       Destination City
                     </label>
-                    <select
+                    <ArohaSelect
+                      id="sourcing-destination-city-select"
                       value={deliveryCity}
-                      onChange={(e) => setDeliveryCity(e.target.value)}
-                      className="w-full h-9 px-3 rounded border border-[#DFD8CB] bg-[#F7F5EE] text-xs font-medium text-[#1E221B] focus:outline-none focus:border-[#233D22]"
-                    >
-                      {CITIES.map((c) => (
-                        <option key={c} value={c}>
-                          {c}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => setDeliveryCity(val)}
+                      options={CITIES}
+                      triggerClassName="h-9 text-xs font-medium bg-[#F7F5EE] border-[#DFD8CB]"
+                    />
                   </div>
                   <div>
                     <label className="block font-semibold text-[#1E221B] mb-1">

@@ -19,6 +19,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ArohaSelect } from '@/components/ui/aroha-select';
 import {
   PackagePlus,
   Edit3,
@@ -522,15 +523,13 @@ function SellerProductsContent() {
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-[#1E221B]">Listing Status</label>
-                  <select
+                  <ArohaSelect
+                    id="edit-listing-status-select"
                     value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value as any)}
-                    className="flex h-9 w-full rounded-md border border-[#DFD8CB] bg-[#F7F5EE] px-3 py-1 text-sm focus-visible:outline-none"
-                  >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="OUT_OF_STOCK">OUT_OF_STOCK</option>
-                    <option value="ARCHIVED">ARCHIVED</option>
-                  </select>
+                    onChange={(val) => setEditStatus(val as any)}
+                    options={['ACTIVE', 'OUT_OF_STOCK', 'ARCHIVED']}
+                    triggerClassName="h-9 text-sm bg-[#F7F5EE] border-[#DFD8CB]"
+                  />
                 </div>
               </div>
 

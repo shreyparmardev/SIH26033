@@ -1106,7 +1106,7 @@ export default function Home() {
                     List harvested crops with transparent digital grade testing, bypass informal trader deductions, and access verified buyers across India with guaranteed escrow settlements.
                   </p>
                 </div>
-                <Link href="/seller/register">
+                <Link href="/register?role=FARMER">
                   <button className="h-11 px-6 text-xs font-bold uppercase tracking-wider bg-[#3B532B] text-[#FAF8F2] rounded hover:bg-[#2D4021]">
                     Register as Farmer / FPO
                   </button>
@@ -1124,7 +1124,7 @@ export default function Home() {
                     Source truckload volumes of grains, oilseeds, and pulses directly from certified farmgate origins with complete batch traceability, automated e-Way bills, and multi-origin logistics.
                   </p>
                 </div>
-                <Link href="/register">
+                <Link href="/register?role=BUYER">
                   <button className="h-11 px-6 text-xs font-bold uppercase tracking-wider border border-[#B3A996] text-[#28381D] rounded hover:bg-[#EAE4D6]">
                     Register as Institutional Buyer
                   </button>
@@ -1198,9 +1198,9 @@ export default function Home() {
             <div className="md:col-span-2">
               <h4 className="text-xs font-bold uppercase tracking-wider text-[#FAF8F2] mb-3 font-sans">Stakeholders</h4>
               <ul className="space-y-2 text-xs text-[#A2A69A]">
-                <li><Link href="/seller/register" className="hover:text-[#FAF8F2]">For Farmers</Link></li>
+                <li><Link href="/register?role=FARMER" className="hover:text-[#FAF8F2]">For Farmers</Link></li>
                 <li><Link href="/fpo" className="hover:text-[#FAF8F2]">For FPO Collectives</Link></li>
-                <li><Link href="/register" className="hover:text-[#FAF8F2]">For Millers & Processors</Link></li>
+                <li><Link href="/register?role=BUYER" className="hover:text-[#FAF8F2]">For Millers & Processors</Link></li>
                 <li><Link href="/login" className="hover:text-[#FAF8F2]">Logistics Partners</Link></li>
                 <li><Link href="/admin" className="hover:text-[#FAF8F2]">Nodal Administrators</Link></li>
               </ul>

@@ -40,6 +40,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { ArohaSelect } from '@/components/ui/aroha-select';
 import {
   fetchAddresses,
   getFarmerMandiIntelligence,
@@ -308,17 +309,13 @@ function SellerIntelligenceContent() {
               <label className="block text-xs font-semibold text-[#1E221B] mb-1.5">
                 Target Commodity
               </label>
-              <select
+              <ArohaSelect
                 value={selectedCommodity}
-                onChange={(e) => setSelectedCommodity(e.target.value)}
-                className="w-full h-10 px-3 rounded-md border border-[#DFD8CB] bg-[#F7F5EE] text-sm font-medium text-[#1E221B] focus:outline-hidden focus:border-[#233D22] focus:ring-1 focus:ring-[#233D22]"
-              >
-                {COMMODITIES.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedCommodity}
+                options={COMMODITIES}
+                className="w-full"
+                triggerClassName="h-10 bg-[#F7F5EE]"
+              />
             </div>
 
             <div>

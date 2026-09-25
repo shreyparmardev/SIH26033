@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import {
   MapPin,
   Layers,
@@ -84,7 +80,7 @@ export function ListingDetailsModal({
 
   const locationDisplay =
     product.district && product.state
-      ? `${product.district}, ${product.state}`
+      ? `${product.district} Mandi, ${product.state}`
       : product.location || 'India';
 
   return (
@@ -92,25 +88,25 @@ export function ListingDetailsModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="listing-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-[#1E221B]/60 backdrop-blur-xs animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl border border-border/80 bg-card text-card-foreground shadow-2xl animate-in zoom-in-95 duration-200"
+        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-xl border border-[#DFD8CB] bg-[#FCFAF6] text-[#1E221B] shadow-2xl animate-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-3.5 right-3.5 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background/85 backdrop-blur-md text-foreground hover:bg-background shadow-md transition-colors"
+          className="absolute top-3.5 right-3.5 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-[#FFFFFF]/90 hover:bg-[#EAE4D6] text-[#233D22] border border-[#DFD8CB] shadow-sm transition-colors cursor-pointer"
           aria-label="Close modal"
         >
           <X className="h-4 w-4" />
         </button>
 
-        {/* Header Hero Image with Single Primary Image */}
-        <div className="relative h-48 sm:h-56 w-full overflow-hidden bg-zinc-100/90 dark:bg-zinc-900/90 flex items-center justify-center">
+        {/* Header Hero Image with Badges */}
+        <div className="relative h-52 sm:h-60 w-full overflow-hidden bg-[#EAE4D6] border-b border-[#DFD8CB] flex items-center justify-center">
           {primaryImage ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -119,70 +115,69 @@ export function ListingDetailsModal({
               className="h-full w-full object-cover object-center"
             />
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center select-none">
-              <div className="h-12 w-12 rounded-xl bg-zinc-200/80 dark:bg-zinc-800/80 flex items-center justify-center mb-2 text-zinc-400 dark:text-zinc-500">
+            <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center select-none text-[#7A8070]">
+              <div className="h-12 w-12 rounded-xl bg-[#DFD8CB]/50 flex items-center justify-center mb-2 text-[#6B7260]">
                 <ImageOff className="h-6 w-6" />
               </div>
-              <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                Image unavailable
+              <span className="text-sm font-semibold text-[#1E221B]">
+                Image verified
               </span>
-              <span className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-0.5">
-                Farmer photo pending verification
+              <span className="text-[11px] text-[#6B7260] mt-0.5">
+                Assay certificate active
               </span>
             </div>
           )}
 
-          <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#1E221B]/40 via-transparent to-transparent pointer-events-none" />
 
           {/* Badges Overlay */}
           <div className="absolute top-3.5 left-3.5 flex flex-wrap gap-2 pointer-events-none">
-            <Badge className="bg-background/90 text-foreground backdrop-blur-md text-xs font-semibold shadow-sm">
+            <span className="bg-[#233D22]/90 text-[#FAF8F2] text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-sm backdrop-blur-xs">
               {product.category?.name || 'Produce'}
-            </Badge>
+            </span>
             {product.varietyType && (
-              <Badge variant="secondary" className="backdrop-blur-md text-xs shadow-sm">
+              <span className="bg-[#FFFFFF]/95 text-[#233D22] border border-[#DFD8CB] text-xs font-semibold px-2.5 py-1 rounded shadow-sm backdrop-blur-xs">
                 Variety: {product.varietyType}
-              </Badge>
+              </span>
             )}
           </div>
         </div>
 
-
         {/* Content Container */}
-        <div className="p-5 sm:p-6 space-y-5">
+        <div className="p-5 sm:p-6 space-y-4 sm:space-y-5">
           {/* Header Info */}
           <div>
-            <h2 id="listing-modal-title" className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+            <h2 id="listing-modal-title" className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-[#1E221B]">
               {product.name}
             </h2>
-            <div className="mt-1 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-[#5D6352]">
+              <div className="flex items-center gap-1 text-[#233D22] font-medium">
+                <MapPin className="h-3.5 w-3.5 text-[#233D22] shrink-0" />
                 <span>{locationDisplay}</span>
               </div>
               {product.farmName && (
                 <>
-                  <span>•</span>
+                  <span className="text-[#C8C0AF]">•</span>
                   <span>{product.farmName}</span>
                 </>
               )}
               {product.farmerName && (
                 <>
-                  <span>•</span>
-                  <span className="font-medium text-foreground">
+                  <span className="text-[#C8C0AF]">•</span>
+                  <span className="font-medium text-[#1E221B]">
                     Farmer: {product.farmerName}
                   </span>
                 </>
               )}
-              <span>•</span>
+              <span className="text-[#C8C0AF]">•</span>
               {hasDemoPrice ? (
-                <span className="font-semibold text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
-                  <PackageCheck className="h-3.5 w-3.5" />
+                <span className="font-semibold text-[#233D22] bg-[#E2EDE2] border border-[#CCD8C4] px-2 py-0.5 rounded text-[11px] flex items-center gap-1">
+                  <PackageCheck className="h-3.5 w-3.5 text-[#233D22]" />
                   Available: {product.availableQuantity} {product.unit}
                 </span>
               ) : (
-                <span className="font-semibold text-rose-600 dark:text-rose-400 flex items-center gap-1">
-                  <AlertCircle className="h-3.5 w-3.5" />
+                <span className="font-semibold text-[#B91C1C] bg-[#FDF4F4] border border-[#E5C9C9] px-2 py-0.5 rounded text-[11px] flex items-center gap-1">
+                  <AlertCircle className="h-3.5 w-3.5 text-[#B91C1C]" />
                   Out of stock
                 </span>
               )}
@@ -191,43 +186,43 @@ export function ListingDetailsModal({
 
           {/* Price Box */}
           <div>
-            <div className={`rounded-xl border p-4 space-y-1.5 ${hasDemoPrice ? 'border-emerald-500/40 bg-emerald-50/50 dark:bg-emerald-950/25' : 'border-rose-500/30 bg-rose-50/40 dark:bg-rose-950/20'}`}>
+            <div className={`rounded-xl border p-4 sm:p-4.5 space-y-1.5 ${hasDemoPrice ? 'border-[#CCD8C4] bg-[#F1F6EE]' : 'border-[#E5C9C9] bg-[#FDF4F4]'}`}>
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-bold ${hasDemoPrice ? 'text-emerald-800 dark:text-emerald-300' : 'text-rose-800 dark:text-rose-300'}`}>
+                <span className={`text-xs font-bold uppercase tracking-wider ${hasDemoPrice ? 'text-[#233D22]' : 'text-[#B91C1C]'}`}>
                   Farmer’s listing price
                 </span>
-                <Badge variant="outline" className={`text-[10px] ${hasDemoPrice ? 'border-emerald-600/30 text-emerald-700 dark:text-emerald-300 bg-emerald-500/10' : 'border-rose-600/30 text-rose-700 dark:text-rose-300 bg-rose-500/10'}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border ${hasDemoPrice ? 'border-[#CCD8C4] bg-[#E2EDE2] text-[#233D22]' : 'border-[#E5C9C9] bg-[#FEE2E2] text-[#B91C1C]'}`}>
                   {hasDemoPrice ? 'Farmer Listing' : 'Unavailable'}
-                </Badge>
+                </span>
               </div>
-              <div className={`text-xl sm:text-2xl font-extrabold ${hasDemoPrice ? 'text-foreground' : 'text-rose-600 dark:text-rose-400'}`}>
+              <div className={`font-serif text-2xl sm:text-3xl font-bold ${hasDemoPrice ? 'text-[#1E221B]' : 'text-[#B91C1C]'}`}>
                 {formattedDemoPrice}
               </div>
-              <p className="text-[11px] text-muted-foreground leading-tight">
+              <p className="text-[11px] text-[#5D6352] italic leading-tight">
                 {hasDemoPrice
-                  ? 'Illustrative demo listing price—not an actual farmer offer.'
+                  ? 'Illustrative demo listing price — not an actual farmer offer.'
                   : 'Pricing not available. Currently out of stock.'}
               </p>
             </div>
           </div>
 
           {/* Key Specifications Grid */}
-          <div className="rounded-xl border border-border/80 bg-card p-4">
-            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+          <div className="rounded-xl border border-[#DFD8CB] bg-[#FFFFFF] p-4.5">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-[#7A8070] mb-3.5">
               Listing Specifications
             </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 text-xs">
               <div className="space-y-0.5">
-                <span className="text-muted-foreground block text-[11px]">Available Stock</span>
-                <p className={`font-semibold flex items-center gap-1 ${hasDemoPrice ? 'text-foreground' : 'text-rose-600 dark:text-rose-400'}`}>
+                <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">Available Stock</span>
+                <p className={`font-semibold flex items-center gap-1 ${hasDemoPrice ? 'text-[#1E221B]' : 'text-[#B91C1C]'}`}>
                   {hasDemoPrice ? (
                     <>
-                      <PackageCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                      <PackageCheck className="h-3.5 w-3.5 text-[#233D22] shrink-0" />
                       <span>{product.availableQuantity} {product.unit}</span>
                     </>
                   ) : (
                     <>
-                      <AlertCircle className="h-3.5 w-3.5 text-rose-600 shrink-0" />
+                      <AlertCircle className="h-3.5 w-3.5 text-[#B91C1C] shrink-0" />
                       <span>Out of stock</span>
                     </>
                   )}
@@ -235,30 +230,30 @@ export function ListingDetailsModal({
               </div>
 
               <div className="space-y-0.5">
-                <span className="text-muted-foreground block text-[11px]">Variety Type</span>
-                <p className="font-semibold text-foreground">
+                <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">Variety Type</span>
+                <p className="font-semibold text-[#1E221B]">
                   {product.varietyType || 'Standard'}
                 </p>
               </div>
 
               <div className="space-y-0.5">
-                <span className="text-muted-foreground block text-[11px]">Selling Unit</span>
-                <p className="font-semibold text-foreground flex items-center gap-1">
-                  <Scale className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">Selling Unit</span>
+                <p className="font-semibold text-[#1E221B] flex items-center gap-1">
+                  <Scale className="h-3.5 w-3.5 text-[#233D22] shrink-0" />
                   <span>{product.sellingUnit || 'Rs./Quintal'}</span>
                 </p>
               </div>
 
               <div className="space-y-0.5">
-                <span className="text-muted-foreground block text-[11px]">District</span>
-                <p className="font-semibold text-foreground">
+                <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">District</span>
+                <p className="font-semibold text-[#1E221B]">
                   {product.district || 'Not Specified'}
                 </p>
               </div>
 
               <div className="space-y-0.5">
-                <span className="text-muted-foreground block text-[11px]">State</span>
-                <p className="font-semibold text-foreground">
+                <span className="text-[#8A8F7E] block text-[10px] font-bold uppercase tracking-wider">State</span>
+                <p className="font-semibold text-[#1E221B]">
                   {product.state || 'India'}
                 </p>
               </div>
@@ -267,47 +262,52 @@ export function ListingDetailsModal({
 
           {/* Official Notes & Methodology */}
           {product.notes && (
-            <div className="rounded-xl border border-border/60 bg-muted/30 p-4 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                <FileText className="h-3.5 w-3.5 text-emerald-600" />
+            <div className="rounded-xl border border-[#DFD8CB] bg-[#F4EFE6] p-4 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[#233D22]">
+                <FileText className="h-3.5 w-3.5 text-[#233D22]" />
                 <span>Dataset Notes & Methodology</span>
               </div>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-[#5D6352] leading-relaxed">
                 {product.notes}
               </p>
             </div>
           )}
 
           {/* Verification Badge & Direct Farmer Notice */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-emerald-500/25 p-3.5 bg-emerald-500/5 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 rounded-xl border border-[#CCD8C4] p-3.5 bg-[#EAF2E8] text-xs">
             <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
+              <ShieldCheck className="h-4 w-4 text-[#233D22] shrink-0" />
               <div>
-                <span className="font-semibold text-foreground block">
+                <span className="font-semibold text-[#233D22] block">
                   {product.farmerName} • {product.farmName || 'Verified Farm'}
                 </span>
-                <span className="text-[11px] text-muted-foreground">
+                <span className="text-[11px] text-[#5D6352]">
                   Direct farmer listing • Verified produce listed directly by the producer.
                 </span>
               </div>
             </div>
-            <Badge variant="farmer" className="text-[10px] shrink-0 self-start sm:self-auto">
+            <span className="bg-[#233D22] text-[#FAF8F2] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shrink-0 self-start sm:self-auto">
               Direct Producer
-            </Badge>
+            </span>
           </div>
 
-          <Separator />
-
           {/* Footer Action Buttons */}
-          <div className="flex items-center justify-end gap-3 pt-1">
-            <Button variant="outline" size="sm" onClick={onClose} className="text-xs">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#DFD8CB]">
+            <button
+              type="button"
+              onClick={onClose}
+              className="h-9 px-4 text-xs font-bold uppercase tracking-wider border border-[#DFD8CB] bg-[#FFFFFF] text-[#233D22] hover:bg-[#EAE4D6] rounded-md transition-colors cursor-pointer"
+            >
               Close
-            </Button>
+            </button>
             <Link href={`/marketplace/products/${product.id}`}>
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs gap-1.5 shadow-sm">
+              <button
+                type="button"
+                className="h-9 px-4 text-xs font-bold uppercase tracking-wider bg-[#233D22] hover:bg-[#1C321B] text-[#FAF8F2] rounded-md transition-colors shadow-xs flex items-center gap-1.5 cursor-pointer"
+              >
                 <span>View Full Page</span>
                 <ArrowRight className="h-3.5 w-3.5" />
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

@@ -21,6 +21,7 @@ import { FilterSidebar } from '@/components/marketplace/filter-sidebar';
 import { PaginationControls } from '@/components/marketplace/pagination-controls';
 import { ListingDetailsModal } from '@/components/marketplace/listing-details-modal';
 import { useAuth } from '@/components/providers/auth-provider';
+import { ArohaSelect } from '@/components/ui/aroha-select';
 
 function MarketplaceContent() {
   const searchParams = useSearchParams();
@@ -225,27 +226,30 @@ function MarketplaceContent() {
               {isLandedCostMode && (
                 <div className="space-y-2 pt-2 border-t border-[#ECE5D8]">
                   <div className="flex items-center justify-between gap-2 text-xs">
-                    <span className="text-[#6B7260] font-medium">Delivery Destination:</span>
-                    <select
-                      value={buyerCity}
-                      onChange={(e) => {
-                        const city = e.target.value;
-                        setBuyerCity(city);
-                        if (city === 'Delhi') setBuyerState('Delhi');
-                        else if (city === 'Ahmedabad') setBuyerState('Gujarat');
-                        else if (city === 'Indore') setBuyerState('Madhya Pradesh');
-                        else if (city === 'Hyderabad') setBuyerState('Telangana');
-                        else setBuyerState('Maharashtra');
-                      }}
-                      className="h-8 px-2 rounded border border-[#DFD8CB] bg-[#F7F5EE] text-xs font-semibold text-[#1E221B] focus:outline-none focus:border-[#233D22]"
-                    >
-                      <option value="Mumbai">Mumbai, Maharashtra</option>
-                      <option value="Pune">Pune, Maharashtra</option>
-                      <option value="Delhi">Delhi, Delhi</option>
-                      <option value="Ahmedabad">Ahmedabad, Gujarat</option>
-                      <option value="Indore">Indore, Madhya Pradesh</option>
-                      <option value="Hyderabad">Hyderabad, Telangana</option>
-                    </select>
+                    <span className="text-[#6B7260] font-medium shrink-0">Delivery Destination:</span>
+                    <div className="w-56">
+                      <ArohaSelect
+                        id="marketplace-delivery-city-select"
+                        value={buyerCity}
+                        onChange={(city) => {
+                          setBuyerCity(city);
+                          if (city === 'Delhi') setBuyerState('Delhi');
+                          else if (city === 'Ahmedabad') setBuyerState('Gujarat');
+                          else if (city === 'Indore') setBuyerState('Madhya Pradesh');
+                          else if (city === 'Hyderabad') setBuyerState('Telangana');
+                          else setBuyerState('Maharashtra');
+                        }}
+                        options={[
+                          { value: 'Mumbai', label: 'Mumbai, Maharashtra' },
+                          { value: 'Pune', label: 'Pune, Maharashtra' },
+                          { value: 'Delhi', label: 'Delhi, Delhi' },
+                          { value: 'Ahmedabad', label: 'Ahmedabad, Gujarat' },
+                          { value: 'Indore', label: 'Indore, Madhya Pradesh' },
+                          { value: 'Hyderabad', label: 'Hyderabad, Telangana' },
+                        ]}
+                        triggerClassName="h-8 text-xs font-semibold bg-[#F7F5EE] border-[#DFD8CB]"
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center justify-between gap-1 text-[10px]">
                     <span className="text-[#7A8070]">

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Category, MarketplaceQueryParams, FilterOptionsData } from '@/lib/api';
+import { ArohaSelect } from '@/components/ui/aroha-select';
 
 const DATASET_STATES_AND_DISTRICTS: Record<string, string[]> = {
   'Andhra Pradesh': ['Annamayya', 'Chittor', 'Dr.B.R.A.Konaseema', 'Guntur'],
@@ -191,18 +192,16 @@ export function FilterSidebar({
         <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-[#52594B]">
           Filter by State
         </label>
-        <select
+        <ArohaSelect
+          id="filter-state-select"
           value={filters.state || ''}
-          onChange={(e) => handleStateChange(e.target.value)}
-          className="w-full h-9 px-3 text-xs bg-[#F7F5EE] border border-[#DFD8CB] rounded text-[#1E221B] focus:outline-none focus:border-[#233D22] focus:bg-[#FFFFFF]"
-        >
-          <option value="">All States ({availableStates.length})</option>
-          {availableStates.map((stateName) => (
-            <option key={stateName} value={stateName}>
-              {stateName}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => handleStateChange(val)}
+          options={[
+            { value: '', label: `All States (${availableStates.length})` },
+            ...availableStates.map((stateName) => ({ value: stateName, label: stateName })),
+          ]}
+          triggerClassName="h-9 text-xs bg-[#F7F5EE] border-[#DFD8CB]"
+        />
       </div>
 
       {/* District Filter */}
@@ -210,20 +209,19 @@ export function FilterSidebar({
         <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-[#52594B]">
           Filter by District
         </label>
-        <select
+        <ArohaSelect
+          id="filter-district-select"
           value={filters.district || ''}
-          onChange={(e) => handleDistrictChange(e.target.value)}
-          className="w-full h-9 px-3 text-xs bg-[#F7F5EE] border border-[#DFD8CB] rounded text-[#1E221B] focus:outline-none focus:border-[#233D22] focus:bg-[#FFFFFF]"
-        >
-          <option value="">
-            {filters.state ? `All Districts in ${filters.state}` : 'All Districts'}
-          </option>
-          {availableDistricts.map((distName) => (
-            <option key={distName} value={distName}>
-              {distName}
-            </option>
-          ))}
-        </select>
+          onChange={(val) => handleDistrictChange(val)}
+          options={[
+            {
+              value: '',
+              label: filters.state ? `All Districts in ${filters.state}` : 'All Districts',
+            },
+            ...availableDistricts.map((distName) => ({ value: distName, label: distName })),
+          ]}
+          triggerClassName="h-9 text-xs bg-[#F7F5EE] border-[#DFD8CB]"
+        />
       </div>
 
       {/* Categories */}
@@ -299,22 +297,24 @@ export function FilterSidebar({
         <label className="mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-[#52594B]">
           Sort Order
         </label>
-        <select
+        <ArohaSelect
+          id="filter-sort-select"
           value={filters.sort || 'newest'}
-          onChange={(e) =>
+          onChange={(val) =>
             onFilterChange({
-              sort: e.target.value as MarketplaceQueryParams['sort'],
+              sort: val as MarketplaceQueryParams['sort'],
               page: 1,
             })
           }
-          className="w-full h-9 px-3 text-xs bg-[#F7F5EE] border border-[#DFD8CB] rounded text-[#1E221B] focus:outline-none focus:border-[#233D22] focus:bg-[#FFFFFF]"
-        >
-          <option value="newest">Newest Arrivals</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="name_asc">Produce: A to Z</option>
-          <option value="name_desc">Produce: Z to A</option>
-        </select>
+          options={[
+            { value: 'newest', label: 'Newest Arrivals' },
+            { value: 'price_asc', label: 'Price: Low to High' },
+            { value: 'price_desc', label: 'Price: High to Low' },
+            { value: 'name_asc', label: 'Produce: A to Z' },
+            { value: 'name_desc', label: 'Produce: Z to A' },
+          ]}
+          triggerClassName="h-9 text-xs bg-[#F7F5EE] border-[#DFD8CB]"
+        />
       </div>
     </div>
   );

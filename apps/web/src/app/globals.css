@@ -168,3 +168,32 @@ body {
 #google_translate_element {
   display: none !important;
 }
+
+/* Aroha Custom Dropdown & Native Select Styling */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23233D22' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 0.85rem;
+  padding-right: 2.25rem !important;
+  cursor: pointer;
+}
+
+select:focus {
+  outline: none;
+  border-color: #233D22 !important;
+}
+
+select option {
+  background-color: #FCFAF6;
+  color: #1E221B;
+  padding: 8px 12px;
+}
+
+select option:checked {
+  background-color: #233D22 !important;
+  color: #FAF8F2 !important;
+}
