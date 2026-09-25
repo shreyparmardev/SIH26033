@@ -37,11 +37,12 @@ export function MarketplaceNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [topSearch, setTopSearch] = useState('');
 
-  const isBuyer = mounted && isAuthenticated && user?.role === 'BUYER';
-  const isFarmer = mounted && isAuthenticated && user?.role === 'FARMER';
-  const isFpo = mounted && isAuthenticated && user?.role === 'FPO';
-  const isAdmin = mounted && isAuthenticated && user?.role === 'ADMIN';
-  const isVisitor = mounted && !isAuthenticated;
+  const role = user?.role?.toUpperCase();
+  const isBuyer = mounted && isAuthenticated && role === 'BUYER';
+  const isFarmer = mounted && isAuthenticated && role === 'FARMER';
+  const isFpo = mounted && isAuthenticated && role === 'FPO';
+  const isAdmin = mounted && isAuthenticated && role === 'ADMIN';
+  const isVisitor = !mounted || !isAuthenticated || (!isBuyer && !isFarmer && !isFpo && !isAdmin);
 
   const { data: cartResponse } = useQuery({
     queryKey: ['cart', token],

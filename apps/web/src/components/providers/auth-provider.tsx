@@ -69,20 +69,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null);
         } else {
           setToken(stored);
+          let loadedUser: AuthUser | null = null;
           if (typeof window !== 'undefined') {
             const storedUser = localStorage.getItem('sih_auth_user');
             if (storedUser) {
               try {
-                const parsed = JSON.parse(storedUser);
-                if (decoded?.role && parsed.role !== decoded.role) {
-                  parsed.role = decoded.role;
+                loadedUser = JSON.parse(storedUser);
+                if (decoded?.role && loadedUser && loadedUser.role !== decoded.role) {
+                  loadedUser.role = decoded.role;
                 }
-                setUser(parsed);
               } catch {
-                setUser(null);
+                loadedUser = null;
               }
             }
           }
+          if (!loadedUser && decoded?.sub) {
+            loadedUser = {
+              id: decoded.sub,
+              email: (decoded as any).email || 'user@aroha.org',
+              role: (decoded.role || 'BUYER').toUpperCase(),
+            };
+          }
+          setUser(loadedUser);
         }
       }
     } catch {
