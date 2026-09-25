@@ -9,7 +9,7 @@ import { loginUser } from '@/lib/api';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setAuth, user, isAuthenticated, logout, loginAsDemoBuyer, loginAsDemoSeller } = useAuth();
+  const { setAuth, user, isAuthenticated, logout } = useAuth();
 
   const [email, setEmail] = useState('farmer1_demo@sih26033.org');
   const [password, setPassword] = useState('Password@123');
@@ -17,7 +17,6 @@ function LoginForm() {
   const [rememberSession, setRememberSession] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [activeQuickRole, setActiveQuickRole] = useState<'buyer' | 'farmer' | 'fpo'>('farmer');
 
   const returnUrl = searchParams.get('returnUrl') || searchParams.get('redirect');
 
@@ -91,38 +90,6 @@ function LoginForm() {
     }
   };
 
-  const handleQuickDemoLogin = async (type: 'buyer' | 'farmer' | 'fpo') => {
-    setActiveQuickRole(type);
-    setIsSubmitting(true);
-    setErrorMessage(null);
-
-    if (type === 'buyer') {
-      setEmail('demobuyer@sih26033.org');
-      setPassword('Password@123');
-    } else if (type === 'farmer') {
-      setEmail('farmer1_demo@sih26033.org');
-      setPassword('Password@123');
-    } else {
-      setEmail('fpo_demo@sih26033.org');
-      setPassword('Password@123');
-    }
-
-    try {
-      if (type === 'buyer') {
-        await loginAsDemoBuyer();
-        handlePostAuthRedirect('BUYER');
-      } else {
-        const role = type === 'fpo' ? 'FPO' : 'FARMER';
-        await loginAsDemoSeller(role);
-        handlePostAuthRedirect(role);
-      }
-    } catch (err: unknown) {
-      setErrorMessage(err instanceof Error ? err.message : 'Demo login failed.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F5EE] text-[#1E221B]">
       {/* Top Banner Notice */}
@@ -148,19 +115,6 @@ function LoginForm() {
               <span className="block text-[10px] tracking-wider uppercase text-[#6B7060] font-sans font-semibold">Agricultural Exchange</span>
             </div>
           </Link>
-
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#3E4336]">
-            <Link href="/marketplace" className="hover:text-[#1E221B]">
-              Marketplace
-            </Link>
-            <Link href="/categories" className="hover:text-[#1E221B]">
-              Categories
-            </Link>
-            <Link href="/fpo" className="hover:text-[#1E221B]">
-              FPO Directory
-            </Link>
-          </nav>
 
           {/* Right Action */}
           <div className="flex items-center gap-3">
@@ -336,71 +290,6 @@ function LoginForm() {
                 </button>
               </div>
             </form>
-
-            {/* Quick Role Sign-in (1-Click Access) */}
-            <div className="mt-6 pt-5 border-t border-[#EAE4D6]">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#686E60]">
-                  Quick Role Sign-In (1-Click Access)
-                </span>
-                <span className="text-[9px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[#EAE4D6] text-[#4F5547]">
-                  Sandbox
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2">
-                {/* Buyer */}
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin('buyer')}
-                  className={`p-2.5 rounded-lg border text-left transition-colors ${
-                    activeQuickRole === 'buyer'
-                      ? 'border-[#233D22] bg-[#F7F5EE]'
-                      : 'border-[#DFD8CB] bg-[#FCFAF6] hover:bg-[#F7F5EE]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-xs font-bold text-[#1E2419]">Buyer</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#BD8728]"></span>
-                  </div>
-                  <span className="text-[10px] text-[#717869] block truncate">Produce Sourcing</span>
-                </button>
-
-                {/* Farmer */}
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin('farmer')}
-                  className={`p-2.5 rounded-lg border text-left transition-colors ${
-                    activeQuickRole === 'farmer'
-                      ? 'border-[#233D22] bg-[#F0F5EE]'
-                      : 'border-[#DFD8CB] bg-[#FCFAF6] hover:bg-[#F7F5EE]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-xs font-bold text-[#1E2419]">Farmer</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D32]"></span>
-                  </div>
-                  <span className="text-[10px] text-[#717869] block truncate">Seller Portal</span>
-                </button>
-
-                {/* FPO */}
-                <button
-                  type="button"
-                  onClick={() => handleQuickDemoLogin('fpo')}
-                  className={`p-2.5 rounded-lg border text-left transition-colors ${
-                    activeQuickRole === 'fpo'
-                      ? 'border-[#233D22] bg-[#F7F5EE]'
-                      : 'border-[#DFD8CB] bg-[#FCFAF6] hover:bg-[#F7F5EE]'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-0.5">
-                    <span className="text-xs font-bold text-[#1E2419]">FPO</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#8E9486]"></span>
-                  </div>
-                  <span className="text-[10px] text-[#717869] block truncate">Cooperative</span>
-                </button>
-              </div>
-            </div>
 
             {/* Card Footer Links */}
             <div className="mt-6 pt-4 text-center space-y-2">

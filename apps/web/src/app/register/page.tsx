@@ -123,19 +123,6 @@ function RegisterForm() {
             </div>
           </Link>
 
-          {/* Navigation Links */}
-          <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-[#3E4336]">
-            <Link href="/marketplace" className="hover:text-[#1E221B]">
-              Marketplace
-            </Link>
-            <Link href="/categories" className="hover:text-[#1E221B]">
-              Categories
-            </Link>
-            <Link href="/fpo" className="hover:text-[#1E221B]">
-              FPO Directory
-            </Link>
-          </nav>
-
           {/* Right Action */}
           <div className="flex items-center gap-3">
             <span className="hidden sm:inline text-xs text-[#6B7060]">Already registered?</span>
