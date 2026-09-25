@@ -1,7 +1,7 @@
 {
   "model_name": "crop_recommender_baseline",
   "model_version": "1.1.0",
-  "created_at": "2026-09-20T22:49:31.580105+00:00",
+  "created_at": "2026-09-25T11:36:47.409334+00:00",
   "algorithm": "RandomForestClassifier",
   "dataset_name": "Atharva Inamdar Precision Agriculture Crop Recommendation Benchmark",
   "dataset_provenance": "REAL_OPEN_BENCHMARK (Kaggle / Harvestify open research dataset)",
