@@ -2,7 +2,7 @@
 
 > **Smart India Hackathon 2026** · **Problem Statement 26033**  
 > *"Multiple intermediaries reduce farmers' earnings and increase consumer prices."*
-> **Live Link: https://sih-26033-web.vercel.app**
+> *"Live Link": https://aroha-market.vercel.app/*
 
 [![Build & CI Status](https://img.shields.io/badge/CI%20Gates-Passing-brightgreen?style=flat-square&logo=githubactions)](https://github.com/shreyparmardev/SIH26033/actions)
 [![Frontend](https://img.shields.io/badge/Frontend-Next.js%2016%20%7C%20React%2019%20%7C%20TailwindCSS%204-0070F3?style=flat-square&logo=nextdotjs)](apps/web)
